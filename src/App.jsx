@@ -125,7 +125,7 @@ export default function App() {
 
             <section>
               <FullBleed className="md:px-32">
-                <p className="text-3xl">Interview</p>
+                <p className="text-3xl pl-4 pb-4 md:p-0">Interview</p>
                 <LazyVideo
                   src="/movies/2_interview.mp4"
                   className="mx-auto w-full max-w-7xl md:py-6"
@@ -177,21 +177,6 @@ export default function App() {
                 </div>
               </FullBleed>
             </section>
-
-            <section className="text-base text-zinc-600">
-              <p>
-                <a
-                  href="https://www.notion.so/missing-greenelephant/ai-284fe61aac5b804abea1fa7f72a0fe1b"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-6"
-                >
-                  노션 페이지
-                </a>
-                에서 자세한 프롬프트와 기록을 확인하실 수 있습니다.
-              </p>
-            </section>
-
             <section className="flex flex-col gap-8">
               <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Worlds</h2>
               <div className="flex flex-col gap-7">

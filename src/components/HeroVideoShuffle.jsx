@@ -91,12 +91,12 @@ export default function HeroVideoShuffle() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden bg-zinc-100 lg:rounded-4xl">
+    <div className="relative w-full overflow-hidden flex flex-col gap-2">
       {currentSrc ? (
         <video
           ref={videoRef}
           key={currentSrc}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover lg:rounded-4xl"
           autoPlay
           muted
           playsInline
@@ -107,9 +107,10 @@ export default function HeroVideoShuffle() {
         </video>
       ) : (
         <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.5em] text-zinc-500">
-          Loading worlds
+          Loading video...
         </div>
       )}
+      <p className="text-xs text-center opacity-30">동영상이 멈췄다면 새로고침 부탁드립니다.</p>
     </div>
   );
 }
