@@ -39,7 +39,7 @@ const worlds = [
 
 function Logo() {
   return (
-    <div className="h-[calc(100vh-10rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 text-[6rem] leading-none text-zinc-900 sm:text-[7rem] md:text-[10rem]">
+    <div className="h-[calc(100vh-20rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 text-[6rem] leading-none text-zinc-900 sm:text-[7rem] md:text-[10rem]">
       <span className="letter font-logo font-bold">C</span>
       <span className="letter font-logo font-bold">P</span>
       <span className="letter font-logo font-bold">N</span>
@@ -74,7 +74,7 @@ export default function App() {
                 <HeroVideoShuffle />
               </div>
               <div className="flex flex-col gap-7 md:gap-14">
-                <h1 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">
+                <h1 className="text-5xl font-semibold md:text-6xl max-w-[20ch] leading-[1.3em] break-keep">
                   AI NPC와 함께 탐험하는 세 개의 가상 세계
                 </h1>
                 <CopyBlock>
