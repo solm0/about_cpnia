@@ -7,6 +7,7 @@ import ImageMarquee from "./components/ImageMarquee";
 import LazyVideo from "./components/LazyVideo";
 import ScrambleButton from "./components/ScrambleButton";
 import ImageMarquee2 from "./components/ImageMarquee2";
+import ImageMarquee3 from "./components/ImageMarquee3";
 
 const CitizenShowcase = lazy(() => import("./components/CitizenShowcase"));
 
@@ -196,24 +197,40 @@ export default function App() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-7 pb-10">
-              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
-              <BehindCarousel />
-            </section>
-
             <section className="flex flex-col gap-8 pb-10">
               <FullBleed>
                 <ImageMarquee2 />
               </FullBleed>
             </section>
 
-            <section className="flex flex-col gap-8 pb-10">
-              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
-              <p className="h-[80vh]">준비 중입니다.</p>
+            <section className="flex flex-col gap-7 pb-10">
+              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
+              <BehindCarousel />
             </section>
 
-            <FullBleed className="bg-zinc-300 h-[40vh] px-4 pt-14">
-                <CopyBlock>
+            <section className="flex flex-col gap-8 pb-10">
+              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
+                
+               <FullBleed className="flex flex-col md:gap-8">
+                <div className="flex flex-col md:flex-row gap-7 items-center md:py-7 bg-zinc-950 md:bg-white max-w-210 mx-auto">
+                  <div className="flex-5 shrink-0">
+                    <img src="/dp_all.jpg" className="rounded-none md:rounded-3xl" />
+                  </div>
+                  <div className="flex-6 shrink-0 px-7 md:p-0 -translate-y-32 md:translate-0 z-30">
+                    <img src="/poster_1.png" className="object-contain border border-zinc-900/30"/>
+                  </div>
+                </div>
+                <LazyVideo
+                  src="/movies/play.mp4"
+                  className="mx-auto w-full max-w-210 md:py-6"
+                  loop
+                />
+                <ImageMarquee3 />
+               </FullBleed>
+            </section>
+
+            <FullBleed className="h-[40vh] px-4 mt-21">
+              <CopyBlock>
                 <p className="opacity-50">제18회 조형전 시각디자인학과 기획전 A팀</p>
                 <p className="text-lg">백채민, 오서연, 정솔미, 남진영, 배경진, 안정원, 한예원</p>
                 <a href="https://www.instagram.com/kmuvcd_exhibition/" className="text-lg underline underline-offset-4 hover:opacity-50">@kmuvcd_exhibition</a>
