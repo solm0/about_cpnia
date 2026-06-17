@@ -46,7 +46,7 @@ export default function BehindCarousel() {
           </button>
         </div>
 
-        <div className="grid items-center gap-4 grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)] py-7 md:py-14">
+        <div className="grid items-center gap-4 grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)] py-14 md:py-21">
           {[slides.prev, slides.active, slides.next].map((item, index) => {
             const isActive = index === 1;
             return (
@@ -58,18 +58,18 @@ export default function BehindCarousel() {
                   if (index === 2) setCurrent((value) => wrap(value + 1, ITEMS.length));
                 }}
                 className={`transition-all duration-500 ${
-                  isActive ? "scale-130 opacity-100 z-20" : "scale-90 opacity-40 hover:opacity-70"
+                  isActive ? "scale-200 md:scale-150 opacity-100 z-20" : "scale-90 opacity-40 hover:opacity-70"
                 }`}
               >
-                <div className="overflow-hidden shadow-sm rounded-2xl md:rounded-3xl">
+                <div className="overflow-visible md:shadow-lg border border-zinc-900/5 rounded-md md:rounded-2xl">
                   <img
                     src={item.image}
                     alt={item.date}
                     loading="lazy"
-                    className={`w-full rounded-2xl md:rounded-3xl object-cover`}
+                    className={`w-full rounded-md md:rounded-2xl object-cover`}
                   />
                 </div>
-                <p className="mt-3 text-center text-sm text-zinc-500">{item.date}</p>
+                <p className="mt-1 text-center text-[6px] md:text-xs text-zinc-500">{item.date}</p>
               </button>
             );
           })}

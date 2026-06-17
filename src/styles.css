@@ -1,14 +1,6 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: "Pretendard";
-  src: url("/pretendard.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family:"Orbit";
   src:url("/Orbit-Regular.ttf") format("truetype");
   font-weight: 400;
@@ -24,14 +16,12 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior: none
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.92), rgba(248, 247, 244, 0.98) 42%),
-    linear-gradient(180deg, #f6f4ee 0%, #f8f7f4 100%);
   font-family: "Orbit", sans-serif;
 }
 
@@ -159,4 +149,14 @@ button {
 
 .animate-marquee-slower {
   animation: marqueeSlow 100s linear infinite;
+}
+
+video, img {
+  filter: brightness(1.05) contrast(110%);
+}
+
+@media (max-width: 639px) {
+  html {
+    overscroll-behavior: auto;
+  }
 }

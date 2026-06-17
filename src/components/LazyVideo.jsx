@@ -37,7 +37,7 @@ export default function LazyVideo({
     <div ref={containerRef} className={className}>
       {active ? (
         <video
-          className="h-full w-full object-cover md:rounded-3xl"
+          className="h-full w-full object-cover md:rounded-3xl md:shadow-lg"
           autoPlay={autoPlay}
           loop={loop}
           muted={muted}

@@ -11,7 +11,6 @@ import ImageMarquee2 from "./components/ImageMarquee2";
 const CitizenShowcase = lazy(() => import("./components/CitizenShowcase"));
 
 const heroParagraphs = [
-  "C.PNIA는 인간과 AI의 합작으로 만들어진 세 개의 가상 사회를 탐험하는 인터랙티브 웹 경험입니다. 플레이어는 입력에 따라 성격과 말투가 변화하는 AI NPC와 대화하며, 인공적인 상상력이 만들어낸 사회와 문화를 직접 경험하게 됩니다.",
   "국민대학교 시각디자인학과 기획전 ‘Through X’에서 A팀은 전시 주제인 ‘현실과 허구의 교차'를 해석한 인터랙티브 웹 프로젝트 C.PNIA를 선보였습니다. 전시 기간 동안 방문객들은 세 개의 국가로 구성된 오픈 월드를 탐험하며 각 사회를 대표하는 AI NPC와 상호작용하고, 대화를 통해 세계관과 사회 구조를 점차 이해해 나갔습니다.",
   "플레이어는 월드 곳곳에 숨겨진 세 개의 퀘스트를 수행하며 각 사회에 점차 동화되고, 모든 여정을 마치면 해당 국가의 시민권을 획득하게 됩니다. AI NPC는 플레이어의 입력에 따라 성격과 대화 방식이 변화하며, 같은 세계라도 사람마다 다른 경험을 만들어 냅니다.",
   "전시는 2025년 11월 6일부터 15일까지 진행되었으며, 관람객들은 게임과 함께 다양한 캐릭터 굿즈를 구매하며 프로젝트를 경험했습니다."
@@ -40,7 +39,7 @@ const worlds = [
 
 function Logo() {
   return (
-    <div className="h-[calc(100vh-20rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 text-[6rem] leading-none text-zinc-900 sm:text-[7rem] md:text-[10rem]">
+    <div className="h-[50vh] md:h-[calc(100vh-20rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 leading-none text-zinc-900 text-[5rem] md:text-[7rem]">
       <span className="letter font-logo font-bold">C</span>
       <span className="letter font-logo font-bold">P</span>
       <span className="letter font-logo font-bold">N</span>
@@ -53,7 +52,7 @@ function Logo() {
 
 function CopyBlock({ children }) {
   return (
-    <div className="flex flex-col gap-7 text-lg leading-8 break-keep sm:pl-14 lg:pl-[40%] md:break-keep max-w-[35em] lg:max-w-max">
+    <div className="flex flex-col gap-7 text-sm md:text-base leading-7 break-keep sm:pl-14 lg:pl-[40%] md:break-keep max-w-[35em] lg:max-w-max">
       {children}
     </div>
   );
@@ -65,23 +64,25 @@ function FullBleed({ children, className = "" }) {
 
 export default function App() {
   return (
-    <main className="min-h-screen scroll-smooth bg-[#f8f7f4] text-zinc-900">
+    <main className="min-h-screen scroll-smooth bg-white text-zinc-900">
       <div className="flex justify-center">
-        <div className="w-full max-w-7xl px-4 py-8 md:px-7 md:py-10">
+        <div className="w-full max-w-7xl px-4 pt-8 md:px-7 md:pt-10">
           <div className="flex flex-col gap-16 md:gap-24">
             <section className="flex flex-col gap-8 md:gap-21">
               <Logo />
               <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden lg:left-auto lg:w-full lg:translate-x-0 lg:rounded-2xl">
                 <HeroVideoShuffle />
               </div>
-              <div className="flex flex-col gap-7 md:gap-14">
-                <h1 className="text-5xl font-semibold md:text-6xl max-w-[20ch] leading-[1.3em] break-keep">
+              <div className="flex flex-col gap-7 md:gap-10">
+                <h1 className="text-3xl md:text-6xl max-w-[20ch] leading-[1.3em] break-keep">
                   AI NPC와 함께 탐험하는 세 개의 가상 세계
                 </h1>
+                <p className="text-zinc-500 break-keep max-w-[35em] leading-8 md:leading-9 text-lg md:text-xl">C.PNIA는 인간과 AI의 합작으로 만들어진 세 개의 가상 사회를 탐험하는 인터랙티브 웹 경험입니다. 플레이어는 입력에 따라 성격과 말투가 변화하는 AI NPC와 대화하며, 인공적인 상상력이 만들어낸 사회와 문화를 직접 경험하게 됩니다.</p>
                 <CopyBlock>
                   {heroParagraphs.map((paragraph, i) => (
-                    <p key={paragraph} className={i==0 && 'font-bold text-blue-500'}>{paragraph}</p>
+                    <p key={paragraph}>{paragraph}</p>
                   ))}
+                  <ScrambleButton text=">_ VISIT CPNIA" href="https://cpnia.vercel.app/" />
                 </CopyBlock>
               </div>
             </section>
@@ -96,12 +97,8 @@ export default function App() {
               </FullBleed>
             </section>
 
-            <section className="flex justify-center">
-              <ScrambleButton text="VISIT CPNIA" href="https://cpnia.vercel.app/" />
-            </section>
-
             <section className="flex flex-col gap-8">
-              <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Citizens</h2>
+              <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Citizens</h2>
               <CopyBlock>
                 <p>일반 NPC들은 맵의 곳곳에 배치되어 각 국가에서 일어나는 대표적 사회 현상들을 보여줍니다.</p>
               </CopyBlock>
@@ -137,14 +134,14 @@ export default function App() {
 
             <section className="flex flex-col gap-5">
               <CopyBlock>
-                <p><span className="font-bold text-blue-500">Step 1.</span> 각 국가 입장 시 '입국심사'라는 명분으로 플레이어에게 텍스트 2개를 입력받습니다.</p>
-                <p><span className="font-bold text-blue-500">Step 2.</span> 문장에서 formality, verbosity, warmth의 레벨(1-3)을 도출합니다. 총 27가지 조합의 npc 성격이 존재합니다.</p>
-                <div className="pl-14">
+                <p><span className="font-black">Step 1.</span> 각 국가 입장 시 플레이어에게 두 개의 질문에 대한 답변을 요청합니다.</p>
+                <p><span className="font-bold">Step 2.</span> 문장에서 formality, verbosity, warmth의 레벨(1-3)을 도출합니다. 총 27가지 조합의 npc 성격이 존재합니다.</p>
+                <div className="pl-7">
                   <p>formality: 하십시오체 / 해요체 / 해체</p>
                   <p>verbosity: 단답 / 평범 / 투머치토커</p>
                   <p>warmth: 친근한 / 중립적인 / 적대적인</p>
                 </div>
-                <p><span className="font-bold text-blue-500">Step 3.</span> 성격이 저장되고, 이후의 npc 대사들이 이에 따라 달라집니다.</p>
+                <p><span className="font-bold">Step 3.</span> 성격이 저장되고, 이후의 npc 대사들이 이에 따라 달라집니다.</p>
               </CopyBlock>
             </section>
 
@@ -155,7 +152,7 @@ export default function App() {
             </section>
 
             <section className="flex flex-col gap-7">
-              <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Chat NPC</h2>
+              <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Chat NPC</h2>
               <CopyBlock>
                 <p>
                   각 세계의 시민들의 생각을 대변하는 Chat NPC들은 플레이어를 따라다니며
@@ -179,28 +176,28 @@ export default function App() {
               </FullBleed>
             </section>
             <section className="flex flex-col gap-8">
-              <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Worlds</h2>
+              <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Worlds</h2>
               <div className="flex flex-col gap-7">
                 {worlds.map((world) => (
                   <div key={world.name} className="flex flex-col md:flex-row">
                     <div className="shrink-0 flex-3 flex justify-center items-center mb-7 md:mb-0">
                       <LazyVideo
                         src={world.video}
-                        className="overflow-hidden rounded-xl w-2/3"
+                        className="overflow-hidden rounded-3xl w-2/3 bg-zinc-200"
                         loop
                       />
                     </div>
                     <div className="shrink-0 flex-6 flex flex-col justify-center gap-4">
-                      <p className="text-3xl">{world.name}</p>
-                      <p className="text-lg leading-8 break-keep max-w-[35em]">{world.description}</p>
+                      <p className="text-2xl">{world.name}</p>
+                      <p className="text-sm md:text-base leading-7 break-keep max-w-[35em]">{world.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="flex flex-col gap-8 pb-10">
-              <h2 className="text-4xl font-semibold max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
+            <section className="flex flex-col gap-7 pb-10">
+              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
               <BehindCarousel />
             </section>
 
@@ -211,9 +208,17 @@ export default function App() {
             </section>
 
             <section className="flex flex-col gap-8 pb-10">
-              <h2 className="text-4xl font-semibold max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
+              <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
               <p className="h-[80vh]">준비 중입니다.</p>
             </section>
+
+            <FullBleed className="bg-zinc-300 h-[40vh] px-4 pt-14">
+                <CopyBlock>
+                <p className="opacity-50">제18회 조형전 시각디자인학과 기획전 A팀</p>
+                <p className="text-lg">백채민, 오서연, 정솔미, 남진영, 배경진, 안정원, 한예원</p>
+                <a href="https://www.instagram.com/kmuvcd_exhibition/" className="text-lg underline underline-offset-4 hover:opacity-50">@kmuvcd_exhibition</a>
+              </CopyBlock>
+            </FullBleed>
           </div>
         </div>
       </div>

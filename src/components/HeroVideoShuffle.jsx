@@ -96,7 +96,7 @@ export default function HeroVideoShuffle() {
         <video
           ref={videoRef}
           key={currentSrc}
-          className="h-full w-full object-cover lg:rounded-4xl"
+          className="h-full w-full object-cover lg:rounded-4xl md:shadow-lg"
           autoPlay
           muted
           playsInline

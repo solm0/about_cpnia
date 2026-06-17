@@ -1,18 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-const CHARS = "CPNIAWORLDVISIT";
+const CHARS = ">_CPNIAWORLDVISIT";
 
 export default function ScrambleButton({ text, href }) {
   const [label, setLabel] = useState(text);
   const frameRef = useRef(0);
   const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    return () => {
-      cancelAnimationFrame(frameRef.current);
-      clearTimeout(timeoutRef.current);
-    };
-  }, []);
+  const intervalRef = useRef(null);
 
   const startScramble = () => {
     cancelAnimationFrame(frameRef.current);
@@ -31,7 +25,7 @@ export default function ScrambleButton({ text, href }) {
         .join("");
 
       setLabel(next);
-      iteration += 0.2;
+      iteration += 0.15;
 
       if (iteration <= target.length) {
         frameRef.current = requestAnimationFrame(tick);
@@ -43,6 +37,16 @@ export default function ScrambleButton({ text, href }) {
     tick();
   };
 
+  useEffect(() => {
+    intervalRef.current = setInterval(startScramble, 5000);
+
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      clearTimeout(timeoutRef.current);
+      clearInterval(intervalRef.current);
+    };
+  }, [text]);
+
   return (
     <a
       href={href}
@@ -50,7 +54,7 @@ export default function ScrambleButton({ text, href }) {
       rel="noreferrer"
       onMouseEnter={startScramble}
       onFocus={startScramble}
-      className="inline-flex items-center justify-center border-2 border-zinc-900 px-8 py-6 font-logo text-5xl uppercase tracking-[0.24em] transition-all duration-300 ease-in-out mt-21 mb-28"
+      className="mt-7 inline-flex items-center justify-center w-[25ch] py-4 md:py-6 font-logo text-3xl md:text-5xl uppercase tracking-[0.24em] transition-all duration-300 ease-in-out mb-21 bg-zinc-400 border-7 border-zinc-900 hover:bg-zinc-300"
     >
       {label}
     </a>
