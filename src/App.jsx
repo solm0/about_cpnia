@@ -6,6 +6,7 @@ import HeroVideoShuffle from "./components/HeroVideoShuffle";
 import ImageMarquee from "./components/ImageMarquee";
 import LazyVideo from "./components/LazyVideo";
 import ScrambleButton from "./components/ScrambleButton";
+import ImageMarquee2 from "./components/ImageMarquee2";
 
 const CitizenShowcase = lazy(() => import("./components/CitizenShowcase"));
 
@@ -199,12 +200,18 @@ export default function App() {
             </section>
 
             <section className="flex flex-col gap-8 pb-10">
-              <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Behind the scenes</h2>
+              <h2 className="text-4xl font-semibold max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
               <BehindCarousel />
             </section>
 
             <section className="flex flex-col gap-8 pb-10">
-              <h2 className="text-5xl font-semibold md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Installation Views</h2>
+              <FullBleed>
+                <ImageMarquee2 />
+              </FullBleed>
+            </section>
+
+            <section className="flex flex-col gap-8 pb-10">
+              <h2 className="text-4xl font-semibold max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
               <p className="h-[80vh]">준비 중입니다.</p>
             </section>
           </div>

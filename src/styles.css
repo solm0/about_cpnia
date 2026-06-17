@@ -156,3 +156,7 @@ button {
 .animate-marquee-slow {
   animation: marqueeSlow 38s linear infinite;
 }
+
+.animate-marquee-slower {
+  animation: marqueeSlow 100s linear infinite;
+}
