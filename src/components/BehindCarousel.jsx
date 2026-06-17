@@ -65,7 +65,6 @@ export default function BehindCarousel() {
                   <img
                     src={item.image}
                     alt={item.date}
-                    loading="lazy"
                     className={`w-full rounded-md md:rounded-2xl object-cover`}
                   />
                 </div>

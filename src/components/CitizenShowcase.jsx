@@ -131,7 +131,6 @@ export default function CitizenShowcase() {
             <img
               src={item.image}
               alt={item.name}
-              loading="lazy"
               className="aspect-square h-full w-full object-cover"
             />
           </button>
