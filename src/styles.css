@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/pretendard.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family:"Orbit";
+  src:url("/Orbit-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color: #18181b;
+  background: #f8f7f4;
+  font-family: "Pretendard", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.92), rgba(248, 247, 244, 0.98) 42%),
+    linear-gradient(180deg, #f6f4ee 0%, #f8f7f4 100%);
+  font-family: "Orbit", sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-logo {
+  font-family: "Jersey 15", cursive;
+}
+
+.font-matrix {
+  font-family: "VT323", monospace;
+}
+
+@keyframes logoCycle5 {
+  0% { transform: translateX(50%); }
+  20% { transform: translateX(50%); }
+  25% { transform: translateX(-500%); }
+  60% { transform: translateX(-500%); }
+  65% { transform: translateX(50%); }
+  100% { transform: translateX(50%); }
+}
+
+@keyframes logoCycle4 {
+  0% { transform: translateX(50%); }
+  20% { transform: translateX(50%); }
+  25% { transform: translateX(-270%); }
+  60% { transform: translateX(-270%); }
+  65% { transform: translateX(50%); }
+  100% { transform: translateX(50%); }
+}
+
+@keyframes logoCycle3 {
+  0% { transform: translateX(50%); }
+  20% { transform: translateX(50%); }
+  25% { transform: translateX(0%); }
+  60% { transform: translateX(0%); }
+  65% { transform: translateX(50%); }
+  100% { transform: translateX(50%); }
+}
+
+@keyframes logoCycle2 {
+  0% { transform: translateX(50%); }
+  20% { transform: translateX(50%); }
+  25% { transform: translateX(260%); }
+  60% { transform: translateX(260%); }
+  65% { transform: translateX(50%); }
+  100% { transform: translateX(50%); }
+}
+
+@keyframes logoCycle1 {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(0); }
+  25% { transform: translateX(500%); }
+  60% { transform: translateX(500%); }
+  65% { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes logoCycle6 {
+  0% { transform: translateX(-1120%); }
+  20% { transform: translateX(-1120%); }
+  25% { transform: translateX(100%); }
+  60% { transform: translateX(100%); }
+  65% { transform: translateX(-1120%); }
+  100% { transform: translateX(-1120%); }
+}
+
+@keyframes marqueeSlow {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+.letter {
+  display: inline-block;
+  transition: transform 0.5s ease-in-out;
+}
+
+.animate-logoCycle .letter:nth-child(5) {
+  animation: logoCycle5 5s infinite ease-in-out;
+}
+
+.animate-logoCycle .letter:nth-child(4) {
+  animation: logoCycle4 5s infinite ease-in-out;
+  animation-delay: 0.1s;
+}
+
+.animate-logoCycle .letter:nth-child(3) {
+  animation: logoCycle3 5s infinite ease-in-out;
+  animation-delay: 0.2s;
+}
+
+.animate-logoCycle .letter:nth-child(2) {
+  animation: logoCycle2 5s infinite ease-in-out;
+  animation-delay: 0.3s;
+}
+
+.animate-logoCycle .letter:nth-child(1) {
+  animation: logoCycle1 5s infinite ease-in-out;
+  animation-delay: 0.4s;
+}
+
+.animate-logoCycle .letter:nth-child(6) {
+  animation: logoCycle6 5s infinite ease-in-out;
+  animation-delay: 0.5s;
+}
+
+.animate-marquee-slow {
+  animation: marqueeSlow 38s linear infinite;
+}
