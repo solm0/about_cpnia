@@ -1,13 +1,16 @@
 import "@fontsource/jersey-15";
 import "@fontsource/vt323";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import BehindCarousel from "./components/BehindCarousel";
 import HeroVideoShuffle from "./components/HeroVideoShuffle";
 import ImageMarquee from "./components/ImageMarquee";
 import LazyVideo from "./components/LazyVideo";
+import RevealSection from "./components/RevealSection";
 import ScrambleButton from "./components/ScrambleButton";
 import ImageMarquee2 from "./components/ImageMarquee2";
 import ImageMarquee3 from "./components/ImageMarquee3";
+import { warmVideoCache } from "./components/videoPreload";
+import { ALL_VIDEO_SOURCES } from "./components/videoSources";
 
 const CitizenShowcase = lazy(() => import("./components/CitizenShowcase"));
 
@@ -38,6 +41,16 @@ const worlds = [
   },
 ];
 
+const heroGradientConfig = {
+  colors: ["#09619b", "#3d59c0", "#d0b9b9"],
+  transparentStop: "72%",
+  whiteStop: "100%",
+  originX: "50%",
+  originY: "-18%",
+  ellipseWidth: "148%",
+  ellipseHeight: "118%",
+};
+
 function Logo() {
   return (
     <div className="h-[50vh] md:h-[calc(100vh-20rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 leading-none text-zinc-900 text-[5rem] md:text-[7rem]">
@@ -64,14 +77,69 @@ function FullBleed({ children, className = "" }) {
 }
 
 export default function App() {
+  const heroVideoRef = useRef(null);
+  const [heroGradientOpacity, setHeroGradientOpacity] = useState(1);
+
+  useEffect(() => {
+    warmVideoCache(ALL_VIDEO_SOURCES);
+  }, []);
+
+  useEffect(() => {
+    const updateGradient = () => {
+      const heroNode = heroVideoRef.current;
+      if (!heroNode) return;
+
+      const { top, height } = heroNode.getBoundingClientRect();
+      const targetTop = window.innerHeight * 0.5 - height * 0.5;
+      const distance = Math.max(top - targetTop, 0);
+      const range = Math.max(window.innerHeight * 0.65, 1);
+      const progress = Math.min(distance / range, 1);
+
+      setHeroGradientOpacity(progress);
+    };
+
+    updateGradient();
+    window.addEventListener("scroll", updateGradient, { passive: true });
+    window.addEventListener("resize", updateGradient);
+
+    return () => {
+      window.removeEventListener("scroll", updateGradient);
+      window.removeEventListener("resize", updateGradient);
+    };
+  }, []);
+
+  const heroGradient = `
+    radial-gradient(
+      ellipse ${heroGradientConfig.ellipseWidth} ${heroGradientConfig.ellipseHeight}
+      at ${heroGradientConfig.originX} ${heroGradientConfig.originY},
+      ${heroGradientConfig.colors[0]} 0%,
+      ${heroGradientConfig.colors[1]} 34%,
+      ${heroGradientConfig.colors[2]} 58%,
+      rgba(255, 255, 255, 0) ${heroGradientConfig.transparentStop},
+      #ffffff ${heroGradientConfig.whiteStop}
+    )
+  `;
+
   return (
-    <main className="min-h-screen scroll-smooth bg-white text-zinc-900">
+    <main
+      className="relative min-h-screen scroll-smooth bg-white text-zinc-900"
+      style={{
+        "--hero-gradient": heroGradient,
+      }}
+    >
+      <div
+        className="hero-gradient pointer-events-none fixed inset-x-0 top-0 z-0 h-[90vh]"
+        style={{ opacity: heroGradientOpacity }}
+      />
       <div className="flex justify-center">
-        <div className="w-full max-w-7xl px-4 pt-8 md:px-7 md:pt-10">
+        <div className="relative z-10 w-full max-w-7xl px-4 pt-8 md:px-7 md:pt-10">
           <div className="flex flex-col gap-16 md:gap-24">
-            <section className="flex flex-col gap-8 md:gap-21">
+            <RevealSection className="flex flex-col gap-8 md:gap-21">
               <Logo />
-              <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden lg:left-auto lg:w-full lg:translate-x-0 lg:rounded-2xl">
+              <div
+                ref={heroVideoRef}
+                className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden lg:left-auto lg:w-full lg:translate-x-0 lg:rounded-2xl"
+              >
                 <HeroVideoShuffle />
               </div>
               <div className="flex flex-col gap-7 md:gap-10">
@@ -86,9 +154,9 @@ export default function App() {
                   <ScrambleButton text=">_ VISIT CPNIA" href="https://cpnia.vercel.app/" />
                 </CopyBlock>
               </div>
-            </section>
+            </RevealSection>
 
-            <section>
+            <RevealSection>
               <FullBleed className="md:px-32">
                 <LazyVideo
                   src="/movies/1_entry.mp4"
@@ -96,9 +164,9 @@ export default function App() {
                   loop
                 />
               </FullBleed>
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-8">
+            <RevealSection className="flex flex-col gap-8">
               <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Citizens</h2>
               <CopyBlock>
                 <p>일반 NPC들은 맵의 곳곳에 배치되어 각 국가에서 일어나는 대표적 사회 현상들을 보여줍니다.</p>
@@ -120,9 +188,9 @@ export default function App() {
               >
                 <CitizenShowcase />
               </Suspense>
-            </section>
+            </RevealSection>
 
-            <section>
+            <RevealSection>
               <FullBleed className="md:px-32">
                 <p className="text-3xl pl-4 pb-4 md:p-0">Interview</p>
                 <LazyVideo
@@ -131,9 +199,9 @@ export default function App() {
                   loop
                 />
               </FullBleed>
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-5">
+            <RevealSection className="flex flex-col gap-5">
               <CopyBlock>
                 <p><span className="font-black">Step 1.</span> 각 국가 입장 시 플레이어에게 두 개의 질문에 대한 답변을 요청합니다.</p>
                 <p><span className="font-bold">Step 2.</span> 문장에서 formality, verbosity, warmth의 레벨(1-3)을 도출합니다. 총 27가지 조합의 npc 성격이 존재합니다.</p>
@@ -144,15 +212,15 @@ export default function App() {
                 </div>
                 <p><span className="font-bold">Step 3.</span> 성격이 저장되고, 이후의 npc 대사들이 이에 따라 달라집니다.</p>
               </CopyBlock>
-            </section>
+            </RevealSection>
 
-            <section>
+            <RevealSection>
               <FullBleed>
                 <ImageMarquee />
               </FullBleed>
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-7">
+            <RevealSection className="flex flex-col gap-7">
               <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Chat NPC</h2>
               <CopyBlock>
                 <p>
@@ -160,9 +228,9 @@ export default function App() {
                   세계관에 대한 어떤 질문이든지 답변해줍니다.
                 </p>
               </CopyBlock>
-            </section>
+            </RevealSection>
 
-            <section>
+            <RevealSection>
               <FullBleed className="">
                 <div className="mx-auto flex max-w-7xl gap-4 overflow-x-auto px-4 md:px-21">
                   {["/movies/story_1.mp4", "/movies/story_2.mp4", "/movies/story_3.mp4"].map((src) => (
@@ -175,8 +243,8 @@ export default function App() {
                   ))}
                 </div>
               </FullBleed>
-            </section>
-            <section className="flex flex-col gap-8">
+            </RevealSection>
+            <RevealSection className="flex flex-col gap-8">
               <h2 className="text-5xl md:text-7xl max-w-[20ch] leading-[1.3em] break-keep">Worlds</h2>
               <div className="flex flex-col gap-7">
                 {worlds.map((world) => (
@@ -195,20 +263,20 @@ export default function App() {
                   </div>
                 ))}
               </div>
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-8 pb-10">
+            <RevealSection className="flex flex-col gap-8 pb-10">
               <FullBleed>
                 <ImageMarquee2 />
               </FullBleed>
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-7 pb-10">
+            <RevealSection className="flex flex-col gap-7 pb-10">
               <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">제작 과정</h2>
               <BehindCarousel />
-            </section>
+            </RevealSection>
 
-            <section className="flex flex-col gap-8 pb-10">
+            <RevealSection className="flex flex-col gap-8 pb-10">
               <h2 className="text-4xl max-w-[20ch] leading-[1.3em] break-keep">전시/굿즈</h2>
                 
                <FullBleed className="flex flex-col md:gap-8">
@@ -227,10 +295,11 @@ export default function App() {
                 />
                 <ImageMarquee3 />
                </FullBleed>
-            </section>
+            </RevealSection>
 
-            <FullBleed className="h-[40vh] px-4 mt-21">
+            <FullBleed className="mt-21 pb-30 px-4">
               <CopyBlock>
+                <ScrambleButton text=">_ VISIT CPNIA" href="https://cpnia.vercel.app/" />
                 <p className="opacity-50">제18회 조형전 시각디자인학과 기획전 A팀</p>
                 <p className="text-lg">백채민, 오서연, 정솔미, 남진영, 배경진, 안정원, 한예원</p>
                 <a href="https://www.instagram.com/kmuvcd_exhibition/" className="text-lg underline underline-offset-4 hover:opacity-50">@kmuvcd_exhibition</a>

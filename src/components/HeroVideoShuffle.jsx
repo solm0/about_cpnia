@@ -1,116 +1,151 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import VideoSkeleton from "./VideoSkeleton";
+import { ensureVideoPreload } from "./videoPreload";
+import { HERO_SHUFFLE_SOURCES } from "./videoSources";
 
-const MOVIE_FILES = [
-  "3_ontime_stair.mp4",
-  "4_ontime_poker.mp4",
-  "5_ontime_slot.mov",
-  "6_ontime_slotstage.mov",
-  "7_ontime_roulette.mov",
-  "8_pizzashoot_npc.mp4",
-  "9_pizzashoot_shot.mp4",
-  "10_pizzashoot_pizza.mp4",
-  "11_pizzashoot_pizzacutter.mp4",
-  "12_pizzashoot_seek.mp4",
-  "13_entropy_break.mp4",
-  "13_entropy_stage2.mp4",
-  "14_entropy.mp4",
-  "15_entropy_stage3.mp4",
-  "16_entropy_run.mov",
-];
+function shuffle(list) {
+  const clone = [...list];
 
-function pickRandom(list, current) {
-  const pool = list.filter((item) => item !== current);
-  if (!pool.length) return current ?? list[0];
-  return pool[Math.floor(Math.random() * pool.length)];
+  for (let index = clone.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [clone[index], clone[swapIndex]] = [clone[swapIndex], clone[index]];
+  }
+
+  return clone;
 }
 
 export default function HeroVideoShuffle() {
-  const sources = useMemo(
-    () => MOVIE_FILES.map((file) => `/movies/${file}`),
-    [],
-  );
-  const [loadedSources, setLoadedSources] = useState([]);
-  const [queue, setQueue] = useState([]);
-  const [currentSrc, setCurrentSrc] = useState("");
-  const videoRef = useRef(null);
-  const seenRef = useRef(new Set());
-  const currentRef = useRef("");
+  const sources = HERO_SHUFFLE_SOURCES;
+  const [slots, setSlots] = useState(() => [
+    { src: sources[0] ?? "", ready: false },
+    { src: sources[1] ?? sources[0] ?? "", ready: false },
+  ]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const videoRefs = [useRef(null), useRef(null)];
+  const slotsRef = useRef(slots);
+  const activeIndexRef = useRef(activeIndex);
+  const deckRef = useRef(shuffle(sources));
 
   useEffect(() => {
-    currentRef.current = currentSrc;
-  }, [currentSrc]);
+    slotsRef.current = slots;
+  }, [slots]);
 
   useEffect(() => {
-    const preloaders = sources.map((src) => {
-      const preloader = document.createElement("video");
-      preloader.preload = "metadata";
-      preloader.muted = true;
-      preloader.src = src;
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
-      const handleLoaded = () => {
-        if (seenRef.current.has(src)) return;
-        seenRef.current.add(src);
-        setLoadedSources((prev) => [...prev, src]);
-        setQueue((prev) =>
-          currentRef.current && currentRef.current !== src ? [...prev, src] : prev,
-        );
-        setCurrentSrc((prev) => prev || src);
-      };
+  const getNextSource = (exclude = []) => {
+    const exclusionSet = new Set(exclude.filter(Boolean));
+    let attempts = deckRef.current.length + sources.length;
 
-      preloader.addEventListener("loadeddata", handleLoaded, { once: true });
-      preloader.load();
-      return preloader;
+    while (attempts > 0) {
+      if (!deckRef.current.length) {
+        deckRef.current = shuffle(sources);
+      }
+
+      const candidate = deckRef.current.shift();
+      if (candidate && !exclusionSet.has(candidate)) {
+        return candidate;
+      }
+
+      attempts -= 1;
+    }
+
+    return sources.find((source) => !exclusionSet.has(source)) ?? sources[0] ?? "";
+  };
+
+  const assignSlot = (slotIndex, src) => {
+    if (!src) return;
+
+    setSlots((prev) =>
+      prev.map((slot, index) =>
+        index === slotIndex ? { src, ready: false } : slot,
+      ),
+    );
+
+    void ensureVideoPreload(src).catch(() => {});
+  };
+
+  const primeSlot = (slotIndex) => {
+    const currentSlots = slotsRef.current;
+    const nextSrc = getNextSource(currentSlots.map((slot) => slot.src));
+    assignSlot(slotIndex, nextSrc);
+  };
+
+  useEffect(() => {
+    sources.forEach((src) => {
+      void ensureVideoPreload(src).catch(() => {});
     });
-
-    return () => {
-      preloaders.forEach((preloader) => {
-        preloader.pause();
-        preloader.removeAttribute("src");
-        preloader.load();
-      });
-    };
   }, [sources]);
 
   useEffect(() => {
-    if (!currentSrc || !videoRef.current) return;
-    videoRef.current.load();
-    void videoRef.current.play().catch(() => {});
-  }, [currentSrc]);
-
-  const playNext = () => {
-    setQueue((prev) => {
-      if (prev.length) {
-        const [next, ...rest] = prev;
-        setCurrentSrc(next);
-        return rest;
-      }
-
-      setCurrentSrc((prevSrc) => pickRandom(loadedSources, prevSrc));
-      return prev;
+    slots.forEach((slot, index) => {
+      if (!slot.ready || index !== activeIndex) return;
+      const video = videoRefs[index].current;
+      if (!video) return;
+      void video.play().catch(() => {});
     });
+  }, [activeIndex, slots, videoRefs]);
+
+  const handleLoaded = (slotIndex) => {
+    setSlots((prev) =>
+      prev.map((slot, index) =>
+        index === slotIndex ? { ...slot, ready: true } : slot,
+      ),
+    );
   };
 
+  const replayCurrent = () => {
+    const currentVideo = videoRefs[activeIndexRef.current].current;
+    if (!currentVideo) return;
+    currentVideo.currentTime = 0;
+    void currentVideo.play().catch(() => {});
+  };
+
+  const playNext = () => {
+    const nextIndex = activeIndexRef.current === 0 ? 1 : 0;
+    const nextSlot = slotsRef.current[nextIndex];
+
+    if (!nextSlot?.ready) {
+      primeSlot(nextIndex);
+      replayCurrent();
+      return;
+    }
+
+    setActiveIndex(nextIndex);
+    primeSlot(activeIndexRef.current);
+  };
+
+  const activeSlot = slots[activeIndex];
+  const isReady = activeSlot?.ready;
+
   return (
-    <div className="relative w-full overflow-hidden flex flex-col gap-2">
-      {currentSrc ? (
-        <video
-          ref={videoRef}
-          key={currentSrc}
-          className="h-full w-full object-cover lg:rounded-4xl md:shadow-lg"
-          autoPlay
-          muted
-          playsInline
-          preload="auto"
-          onEnded={playNext}
-        >
-          <source src={currentSrc} />
-        </video>
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.5em] text-zinc-500">
-          Loading video...
-        </div>
-      )}
-      <p className="text-xs text-center opacity-30">동영상이 멈췄다면 새로고침 부탁드립니다.</p>
+    <div className="relative flex w-full flex-col gap-2 overflow-hidden">
+      <div className="relative aspect-video min-h-[18rem] w-full overflow-hidden md:min-h-[28rem] lg:rounded-4xl">
+        {slots.map((slot, index) => {
+          const isActive = index === activeIndex;
+
+          return (
+            <video
+              key={`${index}-${slot.src}`}
+              ref={videoRefs[index]}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out lg:rounded-4xl md:shadow-lg ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+              autoPlay={isActive}
+              muted
+              playsInline
+              preload="auto"
+              onLoadedData={() => handleLoaded(index)}
+              onCanPlay={() => handleLoaded(index)}
+              onEnded={isActive ? playNext : undefined}
+            >
+              <source src={slot.src} />
+            </video>
+          );
+        })}
+        {!isReady && <VideoSkeleton roundedClassName="lg:rounded-4xl" />}
+      </div>
     </div>
   );
 }

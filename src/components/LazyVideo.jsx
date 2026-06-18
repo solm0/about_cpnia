@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import VideoSkeleton from "./VideoSkeleton";
+import { ensureVideoPreload } from "./videoPreload";
 
 export default function LazyVideo({
   src,
@@ -9,9 +11,16 @@ export default function LazyVideo({
   playsInline = true,
   poster,
   onEnded,
+  placeholderClassName = "aspect-video min-h-[14rem] md:min-h-[20rem]",
+  roundedClassName = "rounded-3xl",
 }) {
   const containerRef = useRef(null);
   const [active, setActive] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    void ensureVideoPreload(src).catch(() => {});
+  }, [src]);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -34,22 +43,31 @@ export default function LazyVideo({
   }, []);
 
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={containerRef} className={`relative overflow-hidden ${className}`}>
       {active ? (
-        <video
-          className="h-full w-full object-cover md:rounded-3xl md:shadow-lg"
-          autoPlay={autoPlay}
-          loop={loop}
-          muted={muted}
-          playsInline={playsInline}
-          preload="metadata"
-          poster={poster}
-          onEnded={onEnded}
-        >
-          <source src={src} />
-        </video>
+        <>
+          <video
+            className={`h-full w-full object-cover transition-opacity duration-500 ease-out md:shadow-lg ${roundedClassName} ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
+            autoPlay={autoPlay}
+            loop={loop}
+            muted={muted}
+            playsInline={playsInline}
+            preload="auto"
+            poster={poster}
+            onLoadedData={() => setLoaded(true)}
+            onCanPlay={() => setLoaded(true)}
+            onEnded={onEnded}
+          >
+            <source src={src} />
+          </video>
+          {!loaded && <VideoSkeleton roundedClassName={roundedClassName} />}
+        </>
       ) : (
-        <div className="h-full w-full animate-pulse bg-zinc-200 rounded-lg" />
+        <div className={`relative w-full ${placeholderClassName}`}>
+          <VideoSkeleton roundedClassName={roundedClassName} />
+        </div>
       )}
     </div>
   );
