@@ -14,13 +14,14 @@ function shuffle(list) {
   return clone;
 }
 
-export default function HeroVideoShuffle() {
+export default function HeroVideoShuffle({ onInitialReady }) {
   const sources = HERO_SHUFFLE_SOURCES;
   const [slots, setSlots] = useState(() => [
     { src: sources[0] ?? "", ready: false },
     { src: sources[1] ?? sources[0] ?? "", ready: false },
   ]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const initialReadySentRef = useRef(false);
   const videoRefs = [useRef(null), useRef(null)];
   const slotsRef = useRef(slots);
   const activeIndexRef = useRef(activeIndex);
@@ -118,6 +119,13 @@ export default function HeroVideoShuffle() {
 
   const activeSlot = slots[activeIndex];
   const isReady = activeSlot?.ready;
+
+  useEffect(() => {
+    if (!isReady || initialReadySentRef.current) return;
+
+    initialReadySentRef.current = true;
+    onInitialReady?.();
+  }, [isReady, onInitialReady]);
 
   return (
     <div className="relative flex w-full flex-col gap-2 overflow-hidden">

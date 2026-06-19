@@ -1,9 +1,10 @@
 import "@fontsource/jersey-15";
 import "@fontsource/vt323";
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import BehindCarousel from "./components/BehindCarousel";
 import HeroVideoShuffle from "./components/HeroVideoShuffle";
 import ImageMarquee from "./components/ImageMarquee";
+import InitialLoader from "./components/InitialLoader";
 import LazyVideo from "./components/LazyVideo";
 import RevealSection from "./components/RevealSection";
 import ScrambleButton from "./components/ScrambleButton";
@@ -41,19 +42,13 @@ const worlds = [
   },
 ];
 
-const heroGradientConfig = {
-  colors: ["#09619b", "#3d59c0", "#d0b9b9"],
-  transparentStop: "72%",
-  whiteStop: "100%",
-  originX: "50%",
-  originY: "-18%",
-  ellipseWidth: "148%",
-  ellipseHeight: "118%",
-};
-
-function Logo() {
+function Logo({ animated }) {
   return (
-    <div className="h-[50vh] md:h-[calc(100vh-20rem)] animate-logoCycle flex flex-wrap items-center justify-center gap-2 leading-none text-zinc-900 text-[5rem] md:text-[7rem]">
+    <div
+      className={`h-[50vh] md:h-[calc(100vh-20rem)] flex items-center justify-center gap-[0.08em] overflow-hidden whitespace-nowrap leading-none text-zinc-900 text-[clamp(3.3rem,18vw,7rem)] ${
+        animated ? "animate-logoCycle" : ""
+      }`}
+    >
       <span className="letter font-logo font-bold">C</span>
       <span className="letter font-logo font-bold">P</span>
       <span className="letter font-logo font-bold">N</span>
@@ -77,84 +72,76 @@ function FullBleed({ children, className = "" }) {
 }
 
 export default function App() {
-  const heroVideoRef = useRef(null);
-  const [heroGradientOpacity, setHeroGradientOpacity] = useState(1);
+  const [fontsReady, setFontsReady] = useState(false);
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
 
   useEffect(() => {
     warmVideoCache(ALL_VIDEO_SOURCES);
   }, []);
 
   useEffect(() => {
-    const updateGradient = () => {
-      const heroNode = heroVideoRef.current;
-      if (!heroNode) return;
+    let cancelled = false;
 
-      const { top, height } = heroNode.getBoundingClientRect();
-      const targetTop = window.innerHeight * 0.5 - height * 0.5;
-      const distance = Math.max(top - targetTop, 0);
-      const range = Math.max(window.innerHeight * 0.65, 1);
-      const progress = Math.min(distance / range, 1);
+    const markFontsReady = () => {
+      if (cancelled) return;
 
-      setHeroGradientOpacity(progress);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!cancelled) {
+            setFontsReady(true);
+          }
+        });
+      });
     };
 
-    updateGradient();
-    window.addEventListener("scroll", updateGradient, { passive: true });
-    window.addEventListener("resize", updateGradient);
+    if (typeof document === "undefined" || !document.fonts) {
+      markFontsReady();
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    Promise.all([
+      document.fonts.load('400 1rem "Orbit"'),
+      document.fonts.load('700 1rem "Jersey 15"'),
+      document.fonts.load('400 1rem "VT323"'),
+      document.fonts.ready,
+    ])
+      .catch(() => {})
+      .finally(markFontsReady);
 
     return () => {
-      window.removeEventListener("scroll", updateGradient);
-      window.removeEventListener("resize", updateGradient);
+      cancelled = true;
     };
   }, []);
 
-  const heroGradient = `
-    radial-gradient(
-      ellipse ${heroGradientConfig.ellipseWidth} ${heroGradientConfig.ellipseHeight}
-      at ${heroGradientConfig.originX} ${heroGradientConfig.originY},
-      ${heroGradientConfig.colors[0]} 0%,
-      ${heroGradientConfig.colors[1]} 34%,
-      ${heroGradientConfig.colors[2]} 58%,
-      rgba(255, 255, 255, 0) ${heroGradientConfig.transparentStop},
-      #ffffff ${heroGradientConfig.whiteStop}
-    )
-  `;
+  const appReady = fontsReady && heroVideoReady;
 
   return (
-    <main
-      className="relative min-h-screen scroll-smooth bg-white text-zinc-900"
-      style={{
-        "--hero-gradient": heroGradient,
-      }}
-    >
-      <div
-        className="hero-gradient pointer-events-none fixed inset-x-0 top-0 z-0 h-[90vh]"
-        style={{ opacity: heroGradientOpacity }}
-      />
-      <div className="flex justify-center">
-        <div className="relative z-10 w-full max-w-7xl px-4 pt-8 md:px-7 md:pt-10">
-          <div className="flex flex-col gap-16 md:gap-24">
-            <RevealSection className="flex flex-col gap-8 md:gap-21">
-              <Logo />
-              <div
-                ref={heroVideoRef}
-                className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden lg:left-auto lg:w-full lg:translate-x-0 lg:rounded-2xl"
-              >
-                <HeroVideoShuffle />
-              </div>
-              <div className="flex flex-col gap-7 md:gap-10">
-                <h1 className="text-3xl md:text-6xl max-w-[20ch] leading-[1.3em] break-keep">
-                  AI NPC와 함께 탐험하는 세 개의 가상 세계
-                </h1>
-                <p className="text-zinc-500 break-keep max-w-[35em] leading-8 md:leading-9 text-lg md:text-xl">C.PNIA는 인간과 AI의 합작으로 만들어진 세 개의 가상 사회를 탐험하는 인터랙티브 웹 경험입니다. 플레이어는 입력에 따라 성격과 말투가 변화하는 AI NPC와 대화하며, 인공적인 상상력이 만들어낸 사회와 문화를 직접 경험하게 됩니다.</p>
-                <CopyBlock>
-                  {heroParagraphs.map((paragraph, i) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                  <ScrambleButton text=">_ VISIT CPNIA" href="https://cpnia.vercel.app/" />
-                </CopyBlock>
-              </div>
-            </RevealSection>
+    <>
+      {!appReady && <InitialLoader />}
+      <main className={`relative min-h-screen scroll-smooth bg-white text-zinc-900 ${appReady ? "app-ready" : "app-pending"}`}>
+        <div className="flex justify-center">
+          <div className="relative z-10 w-full max-w-7xl px-4 pt-8 md:px-7 md:pt-10">
+            <div className="flex flex-col gap-16 md:gap-24">
+              <RevealSection className="flex flex-col gap-8 md:gap-21">
+                <Logo animated={appReady} />
+                <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden lg:left-auto lg:w-full lg:translate-x-0 lg:rounded-2xl">
+                  <HeroVideoShuffle onInitialReady={() => setHeroVideoReady(true)} />
+                </div>
+                <div className="flex flex-col gap-7 md:gap-10">
+                  <h1 className="text-3xl md:text-6xl max-w-[20ch] leading-[1.3em] break-keep">
+                    AI NPC와 함께 탐험하는 세 개의 가상 세계
+                  </h1>
+                  <p className="text-zinc-500 break-keep max-w-[35em] leading-8 md:leading-9 text-lg md:text-xl">C.PNIA는 인간과 AI의 합작으로 만들어진 세 개의 가상 사회를 탐험하는 인터랙티브 웹 경험입니다. 플레이어는 입력에 따라 성격과 말투가 변화하는 AI NPC와 대화하며, 인공적인 상상력이 만들어낸 사회와 문화를 직접 경험하게 됩니다.</p>
+                  <CopyBlock>
+                    {heroParagraphs.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                    <ScrambleButton text=">_ VISIT CPNIA" href="https://cpnia.vercel.app/" />
+                  </CopyBlock>
+                </div>
+              </RevealSection>
 
             <RevealSection>
               <FullBleed className="md:px-32">
@@ -305,9 +292,10 @@ export default function App() {
                 <a href="https://www.instagram.com/kmuvcd_exhibition/" className="text-lg underline underline-offset-4 hover:opacity-50">@kmuvcd_exhibition</a>
               </CopyBlock>
             </FullBleed>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

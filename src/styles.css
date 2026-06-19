@@ -5,12 +5,12 @@
   src:url("/Orbit-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 :root {
   color: #18181b;
-  background: #f8f7f4;
+  background: #ffffff;
   font-family: "Pretendard", sans-serif;
 }
 
@@ -23,7 +23,7 @@ body {
   margin: 0;
   min-width: 320px;
   font-family: "Orbit", sans-serif;
-  background: #f8f7f4;
+  background: #ffffff;
 }
 
 a {
@@ -36,12 +36,6 @@ button {
 
 #root {
   min-height: 100vh;
-}
-
-.hero-gradient {
-  background: var(--hero-gradient);
-  transition: opacity 0.35s ease-out;
-  will-change: opacity;
 }
 
 .font-logo {
@@ -118,7 +112,16 @@ button {
 
 .letter {
   display: inline-block;
+  flex: 0 0 auto;
   transition: transform 0.5s ease-in-out;
+}
+
+.app-pending {
+  visibility: hidden;
+}
+
+.app-ready {
+  visibility: visible;
 }
 
 .animate-logoCycle .letter:nth-child(5) {
@@ -191,7 +194,6 @@ video, img {
     scroll-behavior: auto;
   }
 
-  .hero-gradient,
   .reveal-section {
     transition: none;
   }
