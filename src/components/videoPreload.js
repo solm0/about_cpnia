@@ -1,4 +1,25 @@
 const preloadRegistry = new Map();
+const constrainedDeviceMatch = "(max-width: 768px), (pointer: coarse)";
+
+function cleanupVideo(video) {
+  if (!video) return;
+  video.pause();
+  video.removeAttribute("src");
+  video.load();
+}
+
+export function prefersLiteMediaLoad() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const saveData = Boolean(connection?.saveData);
+  const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
+  const coarsePointer = typeof window.matchMedia === "function" && window.matchMedia(constrainedDeviceMatch).matches;
+
+  return saveData || lowMemory || coarsePointer;
+}
 
 function createPreloader(src) {
   if (typeof document === "undefined") {
@@ -6,7 +27,7 @@ function createPreloader(src) {
   }
 
   const video = document.createElement("video");
-  video.preload = "auto";
+  video.preload = prefersLiteMediaLoad() ? "metadata" : "auto";
   video.muted = true;
   video.playsInline = true;
   video.src = src;
@@ -22,16 +43,17 @@ function createPreloader(src) {
   const entry = {
     promise,
     status: "loading",
-    video,
   };
 
   const markReady = () => {
     entry.status = "ready";
+    cleanupVideo(video);
     resolvePromise(src);
   };
 
   const markError = () => {
     entry.status = "error";
+    cleanupVideo(video);
     rejectPromise(new Error(`Failed to preload video: ${src}`));
   };
 

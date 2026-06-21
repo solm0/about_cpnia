@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import VideoSkeleton from "./VideoSkeleton";
-import { ensureVideoPreload } from "./videoPreload";
+import { prefersLiteMediaLoad } from "./videoPreload";
 
 export default function LazyVideo({
   src,
@@ -17,10 +17,7 @@ export default function LazyVideo({
   const containerRef = useRef(null);
   const [active, setActive] = useState(false);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    void ensureVideoPreload(src).catch(() => {});
-  }, [src]);
+  const preloadMode = prefersLiteMediaLoad() ? "metadata" : "none";
 
   useEffect(() => {
     const node = containerRef.current;
@@ -54,7 +51,7 @@ export default function LazyVideo({
             loop={loop}
             muted={muted}
             playsInline={playsInline}
-            preload="auto"
+            preload={preloadMode}
             poster={poster}
             onLoadedData={() => setLoaded(true)}
             onCanPlay={() => setLoaded(true)}

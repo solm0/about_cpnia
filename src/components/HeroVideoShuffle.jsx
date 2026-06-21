@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import VideoSkeleton from "./VideoSkeleton";
-import { ensureVideoPreload } from "./videoPreload";
+import { ensureVideoPreload, prefersLiteMediaLoad } from "./videoPreload";
 import { HERO_SHUFFLE_SOURCES } from "./videoSources";
 
 function shuffle(list) {
@@ -16,6 +16,7 @@ function shuffle(list) {
 
 export default function HeroVideoShuffle({ onInitialReady }) {
   const sources = HERO_SHUFFLE_SOURCES;
+  const preloadMode = prefersLiteMediaLoad() ? "metadata" : "auto";
   const [slots, setSlots] = useState(() => [
     { src: sources[0] ?? "", ready: false },
     { src: sources[1] ?? sources[0] ?? "", ready: false },
@@ -74,10 +75,11 @@ export default function HeroVideoShuffle({ onInitialReady }) {
   };
 
   useEffect(() => {
-    sources.forEach((src) => {
-      void ensureVideoPreload(src).catch(() => {});
+    slots.forEach((slot) => {
+      if (!slot.src) return;
+      void ensureVideoPreload(slot.src).catch(() => {});
     });
-  }, [sources]);
+  }, [slots]);
 
   useEffect(() => {
     slots.forEach((slot, index) => {
@@ -143,7 +145,7 @@ export default function HeroVideoShuffle({ onInitialReady }) {
               autoPlay={isActive}
               muted
               playsInline
-              preload="auto"
+              preload={preloadMode}
               onLoadedData={() => handleLoaded(index)}
               onCanPlay={() => handleLoaded(index)}
               onEnded={isActive ? playNext : undefined}

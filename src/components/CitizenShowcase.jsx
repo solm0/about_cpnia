@@ -31,9 +31,6 @@ const MODEL_OPTIONS = [
   model: ["/models", `${name}${name === "onion" ? ".glb" : ".gltf"}`].join("/"),
 }));
 
-ANIMATION_FILES.forEach(({ path }) => useGLTF.preload(path));
-MODEL_OPTIONS.forEach(({ model }) => useGLTF.preload(model));
-
 function Loader() {
   const { progress } = useProgress();
 

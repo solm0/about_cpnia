@@ -10,8 +10,6 @@ import RevealSection from "./components/RevealSection";
 import ScrambleButton from "./components/ScrambleButton";
 import ImageMarquee2 from "./components/ImageMarquee2";
 import ImageMarquee3 from "./components/ImageMarquee3";
-import { warmVideoCache } from "./components/videoPreload";
-import { ALL_VIDEO_SOURCES } from "./components/videoSources";
 
 const CitizenShowcase = lazy(() => import("./components/CitizenShowcase"));
 
@@ -74,10 +72,6 @@ function FullBleed({ children, className = "" }) {
 export default function App() {
   const [fontsReady, setFontsReady] = useState(false);
   const [heroVideoReady, setHeroVideoReady] = useState(false);
-
-  useEffect(() => {
-    warmVideoCache(ALL_VIDEO_SOURCES);
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
